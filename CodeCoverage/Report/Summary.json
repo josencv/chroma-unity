@@ -1,0 +1,36 @@
+{
+  "summary": {
+    "generatedon": "2024-02-05T16:59:27Z",
+    "parser": "MultiReportParser (2x OpenCoverParser)",
+    "assemblies": 2,
+    "classes": 12,
+    "files": 12,
+    "coveredlines": 736,
+    "uncoveredlines": 0,
+    "coverablelines": 736,
+    "totallines": 1421,
+    "linecoverage": 100,
+    "coveredbranches": 0,
+    "totalbranches": 0,
+    "coveredmethods": 114,
+    "totalmethods": 114,
+    "methodcoverage": 100
+ },
+  "coverage": {
+    "assemblies": [
+      { "name": "Chroma", "classes": 7, "coverage": 100, "coveredlines": 235, "coverablelines": 235, "totallines": 435, "branchcoverage": null, "coveredbranches": 0, "totalbranches": 0, "methodcoverage": 100, "coveredmethods": 57, "totalmethods": 57, "classesinassembly": [
+        { "name": "Chroma.Core.Infrastructure.StateMachines.Blackboard", "coverage": 100, "coveredlines": 70, "coverablelines": 70, "totallines": 115, "branchcoverage": null, "coveredbranches": 0, "totalbranches": 0, "methodcoverage": 100, "coveredmethods": 15, "totalmethods": 15 },
+        { "name": "Chroma.Core.Infrastructure.StateMachines.BlackboardVariable", "coverage": 100, "coveredlines": 7, "coverablelines": 7, "totallines": 14, "branchcoverage": null, "coveredbranches": 0, "totalbranches": 0, "methodcoverage": 100, "coveredmethods": 5, "totalmethods": 5 },
+        { "name": "Chroma.Core.Infrastructure.StateMachines.EmptyState", "coverage": 100, "coveredlines": 9, "coverablelines": 9, "totallines": 25, "branchcoverage": null, "coveredbranches": 0, "totalbranches": 0, "methodcoverage": 100, "coveredmethods": 4, "totalmethods": 4 },
+        { "name": "Chroma.Core.Infrastructure.StateMachines.State", "coverage": 100, "coveredlines": 21, "coverablelines": 21, "totallines": 60, "branchcoverage": null, "coveredbranches": 0, "totalbranches": 0, "methodcoverage": 100, "coveredmethods": 5, "totalmethods": 5 },
+        { "name": "Chroma.Core.Infrastructure.StateMachines.StateMachine", "coverage": 100, "coveredlines": 72, "coverablelines": 72, "totallines": 118, "branchcoverage": null, "coveredbranches": 0, "totalbranches": 0, "methodcoverage": 100, "coveredmethods": 16, "totalmethods": 16 },
+        { "name": "Chroma.Core.Infrastructure.StateMachines.StateTransition", "coverage": 100, "coveredlines": 32, "coverablelines": 32, "totallines": 59, "branchcoverage": null, "coveredbranches": 0, "totalbranches": 0, "methodcoverage": 100, "coveredmethods": 4, "totalmethods": 4 },
+        { "name": "Chroma.Core.Infrastructure.StateMachines.TransitionCondition", "coverage": 100, "coveredlines": 24, "coverablelines": 24, "totallines": 44, "branchcoverage": null, "coveredbranches": 0, "totalbranches": 0, "methodcoverage": 100, "coveredmethods": 8, "totalmethods": 8 } ] },
+      { "name": "UnitTests", "classes": 5, "coverage": 100, "coveredlines": 501, "coverablelines": 501, "totallines": 986, "branchcoverage": null, "coveredbranches": 0, "totalbranches": 0, "methodcoverage": 100, "coveredmethods": 57, "totalmethods": 57, "classesinassembly": [
+        { "name": "Chroma.Tests.Unit.Core.Infrastructure.StateMachines.BlackboardTests", "coverage": 100, "coveredlines": 205, "coverablelines": 205, "totallines": 374, "branchcoverage": null, "coveredbranches": 0, "totalbranches": 0, "methodcoverage": 100, "coveredmethods": 26, "totalmethods": 26 },
+        { "name": "Chroma.Tests.Unit.Core.Infrastructure.StateMachines.StateMachineTests", "coverage": 100, "coveredlines": 100, "coverablelines": 100, "totallines": 214, "branchcoverage": null, "coveredbranches": 0, "totalbranches": 0, "methodcoverage": 100, "coveredmethods": 8, "totalmethods": 8 },
+        { "name": "Chroma.Tests.Unit.Core.Infrastructure.StateMachines.StateTests", "coverage": 100, "coveredlines": 50, "coverablelines": 50, "totallines": 107, "branchcoverage": null, "coveredbranches": 0, "totalbranches": 0, "methodcoverage": 100, "coveredmethods": 7, "totalmethods": 7 },
+        { "name": "Chroma.Tests.Unit.Core.Infrastructure.StateMachines.StateTransitionTests", "coverage": 100, "coveredlines": 99, "coverablelines": 99, "totallines": 201, "branchcoverage": null, "coveredbranches": 0, "totalbranches": 0, "methodcoverage": 100, "coveredmethods": 10, "totalmethods": 10 },
+        { "name": "Chroma.Tests.Unit.Core.Infrastructure.StateMachines.TransitionConditionTests", "coverage": 100, "coveredlines": 47, "coverablelines": 47, "totallines": 90, "branchcoverage": null, "coveredbranches": 0, "totalbranches": 0, "methodcoverage": 100, "coveredmethods": 6, "totalmethods": 6 } ] } ]
+  }
+}

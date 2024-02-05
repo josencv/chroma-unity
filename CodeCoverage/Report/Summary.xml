@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CoverageReport scope="Summary">
+  <Summary>
+    <Generatedon>2/5/2024 - 1:59:27 PM</Generatedon>
+    <Parser>MultiReportParser (2x OpenCoverParser)</Parser>
+    <Assemblies>2</Assemblies>
+    <Classes>12</Classes>
+    <Files>12</Files>
+    <Coveredlines>736</Coveredlines>
+    <Uncoveredlines>0</Uncoveredlines>
+    <Coverablelines>736</Coverablelines>
+    <Totallines>1421</Totallines>
+    <Linecoverage>100</Linecoverage>
+    <Coveredbranches>0</Coveredbranches>
+    <Totalbranches>0</Totalbranches>
+    <Coveredmethods>114</Coveredmethods>
+    <Totalmethods>114</Totalmethods>
+    <Methodcoverage>100</Methodcoverage>
+  </Summary>
+  <Coverage>
+    <Assembly name="Chroma" classes="7" coverage="100" coveredlines="235" coverablelines="235" totallines="435" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="57" totalmethods="57" methodcoverage="100">
+      <Class name="Chroma.Core.Infrastructure.StateMachines.Blackboard" coverage="100" coveredlines="70" coverablelines="70" totallines="115" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="15" totalmethods="15" methodcoverage="100" />
+      <Class name="Chroma.Core.Infrastructure.StateMachines.BlackboardVariable" coverage="100" coveredlines="7" coverablelines="7" totallines="14" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="5" totalmethods="5" methodcoverage="100" />
+      <Class name="Chroma.Core.Infrastructure.StateMachines.EmptyState" coverage="100" coveredlines="9" coverablelines="9" totallines="25" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="4" totalmethods="4" methodcoverage="100" />
+      <Class name="Chroma.Core.Infrastructure.StateMachines.State" coverage="100" coveredlines="21" coverablelines="21" totallines="60" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="5" totalmethods="5" methodcoverage="100" />
+      <Class name="Chroma.Core.Infrastructure.StateMachines.StateMachine" coverage="100" coveredlines="72" coverablelines="72" totallines="118" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="16" totalmethods="16" methodcoverage="100" />
+      <Class name="Chroma.Core.Infrastructure.StateMachines.StateTransition" coverage="100" coveredlines="32" coverablelines="32" totallines="59" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="4" totalmethods="4" methodcoverage="100" />
+      <Class name="Chroma.Core.Infrastructure.StateMachines.TransitionCondition" coverage="100" coveredlines="24" coverablelines="24" totallines="44" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="8" totalmethods="8" methodcoverage="100" />
+    </Assembly>
+    <Assembly name="UnitTests" classes="5" coverage="100" coveredlines="501" coverablelines="501" totallines="986" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="57" totalmethods="57" methodcoverage="100">
+      <Class name="Chroma.Tests.Unit.Core.Infrastructure.StateMachines.BlackboardTests" coverage="100" coveredlines="205" coverablelines="205" totallines="374" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="26" totalmethods="26" methodcoverage="100" />
+      <Class name="Chroma.Tests.Unit.Core.Infrastructure.StateMachines.StateMachineTests" coverage="100" coveredlines="100" coverablelines="100" totallines="214" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="8" totalmethods="8" methodcoverage="100" />
+      <Class name="Chroma.Tests.Unit.Core.Infrastructure.StateMachines.StateTests" coverage="100" coveredlines="50" coverablelines="50" totallines="107" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="7" totalmethods="7" methodcoverage="100" />
+      <Class name="Chroma.Tests.Unit.Core.Infrastructure.StateMachines.StateTransitionTests" coverage="100" coveredlines="99" coverablelines="99" totallines="201" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="10" totalmethods="10" methodcoverage="100" />
+      <Class name="Chroma.Tests.Unit.Core.Infrastructure.StateMachines.TransitionConditionTests" coverage="100" coveredlines="47" coverablelines="47" totallines="90" branchcoverage="" coveredbranches="0" totalbranches="0" coveredmethods="6" totalmethods="6" methodcoverage="100" />
+    </Assembly>
+  </Coverage>
+</CoverageReport>
