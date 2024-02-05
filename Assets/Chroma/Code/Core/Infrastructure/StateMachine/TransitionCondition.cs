@@ -15,7 +15,7 @@ namespace Chroma.Core.Infrastructure.StateMachines
             this.RightOperandValue = rightOperandValue;
         }
 
-        public static TransitionCondition CreateBoolTransitionCondition(string leftOperandVarName, ConditionOperator conditionOperator, bool rightOperandValue)
+        public static TransitionCondition CreateBoolCondition(string leftOperandVarName, ConditionOperator conditionOperator, bool rightOperandValue)
         {
             if(conditionOperator != ConditionOperator.Equal && conditionOperator != ConditionOperator.NotEqual)
             {
@@ -31,7 +31,7 @@ namespace Chroma.Core.Infrastructure.StateMachines
             return new TransitionCondition(leftOperandVarName, conditionOperator, rightOperandValue);
         }
 
-        public static TransitionCondition CreateFloatCondition(string leftOperandVarName, ConditionOperator conditionOperator, int rightOperandValue)
+        public static TransitionCondition CreateIntCondition(string leftOperandVarName, ConditionOperator conditionOperator, int rightOperandValue)
         {
             return new TransitionCondition(leftOperandVarName, conditionOperator, rightOperandValue);
         }

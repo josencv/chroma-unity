@@ -1,4 +1,4 @@
 namespace Chroma.Core.Infrastructure.StateMachines
 {
-    public enum ConditionOperator { Greater, Less, Equal, NotEqual }
+    public enum ConditionOperator { Greater, GreaterEqual, Less, LessEqual, Equal, NotEqual }
 }

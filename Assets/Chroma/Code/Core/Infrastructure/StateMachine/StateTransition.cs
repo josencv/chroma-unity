@@ -26,26 +26,31 @@ namespace Chroma.Core.Infrastructure.StateMachines
             return true;
         }
 
-        public bool IsConditionMet(Blackboard blackboard, TransitionCondition condition)
+        private bool IsConditionMet(Blackboard blackboard, TransitionCondition condition)
         {
             BlackboardVariable variable = blackboard.GetVariable(condition.LeftOperandVarName);
             bool isConditionMet;
 
-            if(condition.ConditionOperator == ConditionOperator.Greater)
+            switch(condition.ConditionOperator)
             {
-                isConditionMet = variable.Value > condition.RightOperandValue;
-            }
-            else if(condition.ConditionOperator == ConditionOperator.Less)
-            {
-                isConditionMet = variable.Value < condition.RightOperandValue;
-            }
-            else if(condition.ConditionOperator == ConditionOperator.Equal)
-            {
-                isConditionMet = variable.Value == condition.RightOperandValue;
-            }
-            else
-            {
-                isConditionMet = variable.Value != condition.RightOperandValue;
+                case ConditionOperator.Greater:
+                    isConditionMet = variable.Value > condition.RightOperandValue;
+                    break;
+                case ConditionOperator.GreaterEqual:
+                    isConditionMet = variable.Value >= condition.RightOperandValue;
+                    break;
+                case ConditionOperator.Less:
+                    isConditionMet = variable.Value < condition.RightOperandValue;
+                    break;
+                case ConditionOperator.LessEqual:
+                    isConditionMet = variable.Value <= condition.RightOperandValue;
+                    break;
+                case ConditionOperator.Equal:
+                    isConditionMet = variable.Value == condition.RightOperandValue;
+                    break;
+                default:
+                    isConditionMet = variable.Value != condition.RightOperandValue;
+                    break;
             }
 
             return isConditionMet;

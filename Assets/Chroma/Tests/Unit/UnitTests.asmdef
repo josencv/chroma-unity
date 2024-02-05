@@ -1,0 +1,20 @@
+{
+    "name": "UnitTests",
+    "rootNamespace": "Chroma",
+    "references": [
+        "GUID:c7a8f708b265a40518ca4e589d07555a"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

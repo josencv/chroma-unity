@@ -2,7 +2,7 @@ namespace Chroma.Core.Infrastructure.StateMachines
 {
     public class EmptyState : State
     {
-        protected EmptyState(string name) : base(name)
+        public EmptyState(string name) : base(name)
         {
 
         }

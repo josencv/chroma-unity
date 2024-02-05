@@ -8,7 +8,7 @@ namespace Chroma.Core.Infrastructure.StateMachines
         private Blackboard blackboard = new Blackboard();
         private bool shouldEvaluateTransitions = false;
         private State entrypoint;
-        private State currentState;
+        public State CurrentState { get; private set; }
 
         public StateMachine(State entrypoint)
         {
@@ -17,8 +17,8 @@ namespace Chroma.Core.Infrastructure.StateMachines
 
         public void Start()
         {
-            this.currentState = this.entrypoint;
-            this.currentState.OnEnter();
+            this.CurrentState = this.entrypoint;
+            this.CurrentState.OnEnter();
             // when the machine starts, we need to immediately evaluate transitions
             // because we don't know the current state of the blackboard
             this.shouldEvaluateTransitions = true;
@@ -26,12 +26,13 @@ namespace Chroma.Core.Infrastructure.StateMachines
 
         public void Tick(float deltaTime)
         {
-            this.currentState.Tick(deltaTime);
+            this.CurrentState.Tick(deltaTime);
             if(this.shouldEvaluateTransitions)
             {
                 this.EvaluateTransitions();
                 this.shouldEvaluateTransitions = false;
             }
+            this.blackboard.CleanTriggers();
         }
 
         public void RegisterBool(string name, bool initialValue = false)
@@ -80,21 +81,24 @@ namespace Chroma.Core.Infrastructure.StateMachines
 
         private void ChangeState(State targetState)
         {
-            this.currentState.OnExit();
+            this.CurrentState.OnExit();
             targetState.OnEnter();
-            this.currentState = targetState;
+            // triggers are cleaned immediately on change to avoid multiple changes
+            // for the same trigger. If you do need multiple state changes, use a bool
+            // instead
+            this.blackboard.CleanTriggers();
+            this.CurrentState = targetState;
         }
 
         private void EvaluateTransitions()
         {
             var visitedStates = new HashSet<int>();
             this.EvaluateTransitions(visitedStates);
-
         }
 
         private void EvaluateTransitions(HashSet<int> visitedStates)
         {
-            StateTransition transition = this.currentState.EvaluateTransitions(this.blackboard);
+            StateTransition transition = this.CurrentState.EvaluateTransitions(this.blackboard);
             if(transition != null)
             {
                 int stateHash = transition.To.GetHashCode();
