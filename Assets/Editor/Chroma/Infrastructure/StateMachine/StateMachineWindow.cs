@@ -1,33 +1,46 @@
+using System.Collections.Generic;
+using System.Linq;
+using Chroma.Core.Infrastructure.StateMachines;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class StateMachineWindow : EditorWindow
+namespace Chroma.Editor.Infrastructure.StateMachine
 {
-    [SerializeField]
-    private VisualTreeAsset visualTreeAsset = default;
-
-    [MenuItem("Window/Chroma/State Machine")]
-    public static void ShowExample()
+    public class StateMachineWindow : EditorWindow
     {
-        StateMachineWindow wnd = GetWindow<StateMachineWindow>();
-        wnd.titleContent = new GUIContent("State Machine");
-    }
+        [SerializeField]
+        private VisualTreeAsset visualTreeAsset = default;
 
-    public void CreateGUI()
-    {
-        // Each editor window contains a root VisualElement object
-        VisualElement root = this.rootVisualElement;
+        private IEnumerable<System.Type> stateTypes;
 
-        var grid = new ZoomableGrid();
+        [MenuItem("Window/Chroma/State Machine")]
+        public static void ShowWindow()
+        {
+            StateMachineWindow wnd = GetWindow<StateMachineWindow>();
+            wnd.titleContent = new GUIContent("State Machine");
+        }
 
-        // Optionally, set its style to fill the parent or specify dimensions
-        grid.style.flexGrow = 1;
+        private void OnEnable()
+        {
+            // Load state types and do stuff
+        }
 
-        root.Add(grid);
+        public void CreateGUI()
+        {
+            // Each editor window contains a root VisualElement object
+            VisualElement root = this.rootVisualElement;
 
-        // Instantiate UXML
-        VisualElement labelFromUXML = this.visualTreeAsset.Instantiate();
-        root.Add(labelFromUXML);
+            root.Add(new Grid());
+
+            // Instantiate UXML
+            VisualElement labelFromUXML = this.visualTreeAsset.Instantiate();
+            root.Add(labelFromUXML);
+        }
+
+        private void LoadStatesTypes()
+        {
+            this.stateTypes = TypeCache.GetTypesDerivedFrom<State>().Where(t => !t.IsAbstract);
+        }
     }
 }
