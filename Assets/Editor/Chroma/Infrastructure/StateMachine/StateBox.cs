@@ -6,7 +6,7 @@ namespace Chroma.Editor.Infrastructure.StateMachine
 {
     public class StateBox : PositionedVisualElement
     {
-        private const int boxBorderRadius = 6;
+        private const int boxBorderRadius = 3;
 
         public StateBox(string stateName, Vector2 position) : base(position)
         {
@@ -17,6 +17,7 @@ namespace Chroma.Editor.Infrastructure.StateMachine
 
         private void AddLabel(string stateName)
         {
+            this.style.backgroundColor = new Color(10.0f / 255, 140.0f / 255, 70.0f / 255);
             var label = new Label(stateName);
             label.style.unityTextAlign = TextAnchor.MiddleCenter; // Ensure text is centered
             this.Add(label); // Add the label to the box
@@ -24,8 +25,8 @@ namespace Chroma.Editor.Infrastructure.StateMachine
 
         private void DefineDefaultStyles()
         {
-            this.style.width = 100;
-            this.style.height = 50;
+            this.style.width = 150;
+            this.style.height = 30;
             this.style.position = USSPosition.Absolute;
             this.style.backgroundColor = Color.gray;
             this.style.justifyContent = Justify.Center;

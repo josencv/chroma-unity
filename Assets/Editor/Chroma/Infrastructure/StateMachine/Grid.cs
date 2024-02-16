@@ -6,7 +6,8 @@ namespace Chroma.Editor.Infrastructure.StateMachine
 {
     public class Grid : VisualElement
     {
-        private const int lineSpacing = 10;
+        // For simplicity, the unit is equal to 1 pixel with a zoom level of 1
+        private const int lineSpacing = 14; // in units
         private const float minZoom = 0.2f;
         private const float maxZoom = 6.0f;
         private const float zoomSensitivity = 0.06f;
@@ -23,9 +24,8 @@ namespace Chroma.Editor.Infrastructure.StateMachine
         /// The logical or "simulated" position of the top-left corner of the viewport of the grid
         /// in a virtual infinite plane
         /// </summary>
-        private Vector2 viewportPosition = new Vector2(1000, 1000);
-        private float zoomLevel = 1.0f;
-        private Vector2 currentOffset = Vector2.one;
+        private Vector2 viewportPosition = Vector2.zero;
+        private float zoomLevel = 1.4f;
 
         public Grid()
         {
@@ -39,7 +39,7 @@ namespace Chroma.Editor.Infrastructure.StateMachine
 
         private void AddStateBox()
         {
-            var stateBox = new StateBox("Test State", new Vector2(this.viewportPosition.x + 100, this.viewportPosition.y + 100));
+            var stateBox = new StateBox("Test State", new Vector2(100, 150));
             this.positionedElements.Add(stateBox);
             this.Add(stateBox);
         }
@@ -62,8 +62,6 @@ namespace Chroma.Editor.Infrastructure.StateMachine
                 float height = element.style.height.value.value;
 
                 element.style.scale = new StyleScale(new Vector2(this.zoomLevel, this.zoomLevel));
-                // element.style.left = (element.Position.x - this.viewportPosition.x) * this.zoomLevel + width / 2 * (this.zoomLevel - 1);
-                // element.style.top = (element.Position.y - this.viewportPosition.y) * this.zoomLevel + height / 2 * (this.zoomLevel - 1);
                 element.style.left = (element.Position.x - this.viewportPosition.x) * this.zoomLevel + width / 2 * (this.zoomLevel - 1);
                 element.style.top = (element.Position.y - this.viewportPosition.y) * this.zoomLevel + height / 2 * (this.zoomLevel - 1);
             }
@@ -76,99 +74,61 @@ namespace Chroma.Editor.Infrastructure.StateMachine
             float lastZoomLevel = this.zoomLevel;
             this.zoomLevel -= evt.delta.y * zoomSensitivity * this.zoomLevel;
             this.zoomLevel = Mathf.Clamp(this.zoomLevel, minZoom, maxZoom);
-            this.currentOffset = this.UpdateViewportPosition(evt.localMousePosition, lastZoomLevel, this.zoomLevel, this.currentOffset, this.zoomLevel * lineSpacing * minorLinesPerMajorLine);
+            this.UpdateViewportPosition(evt.localMousePosition, lastZoomLevel, this.zoomLevel);
             this.PositionStates();
             this.MarkDirtyRepaint();
             evt.StopPropagation();
         }
 
+        private void UpdateViewportPosition(Vector2 zoomPoint, float lastZoomLevel, float currentZoomLevel)
+        {
+            float scaleFactor = currentZoomLevel / lastZoomLevel;
+            Vector2 zoomPosition = zoomPoint / currentZoomLevel;
+            this.viewportPosition = this.viewportPosition + (zoomPosition * (scaleFactor - 1));
+        }
+
         private void DrawLines(MeshGenerationContext ctx)
         {
             Painter2D painter = ctx.painter2D;
-            this.DrawMajorLines(painter);
             this.DrawMinorLines(painter);
-        }
-
-        private Vector2 UpdateViewportPosition(Vector2 zoomPoint, float lastZoomLevel, float currentZoomLevel, Vector2 lastOffset, float majorLineSpacing)
-        {
-            float scaleFactor = currentZoomLevel / lastZoomLevel;
-            // Calculate the new offset based on the zoom point and scale factor
-            // The idea is to find the vector from the zoom point to the current offset,
-            // scale that vector by the zoom factor, and then adjust the offset by the difference
-            Vector2 scaledOffsetToZoomPoint = (zoomPoint - lastOffset) * scaleFactor;
-            Vector2 newOffset = zoomPoint - scaledOffsetToZoomPoint;
-
-            Vector2 zoomPosition = zoomPoint / currentZoomLevel;
-            this.viewportPosition = this.viewportPosition + (zoomPosition * (scaleFactor - 1));
-
-            return new Vector2(newOffset.x % majorLineSpacing, newOffset.y % majorLineSpacing);
+            this.DrawMajorLines(painter);
         }
 
         private void DrawMajorLines(Painter2D painter)
         {
-            float width = this.layout.width;
-            float height = this.layout.height;
-            float offsetWidth = this.layout.width - this.currentOffset.x;
-            float offsetHeight = this.layout.height - this.currentOffset.y;
-
-            // Major lines - Vertical
-            painter.BeginPath();
-            painter.strokeColor = this.majorLineColor;
-            painter.lineWidth = majorLineThickness;
-            float spaceBetweenLines = lineSpacing * this.zoomLevel * minorLinesPerMajorLine;
-            for(int i = 0; i < offsetWidth / spaceBetweenLines; i++)
-            {
-                float nextPosition = this.currentOffset.x + i * spaceBetweenLines;
-                painter.MoveTo(new Vector2(nextPosition, 0));
-                painter.LineTo(new Vector2(nextPosition, height));
-            }
-
-            // Major lines - Horizontal
-            for(int i = 0; i < offsetHeight / spaceBetweenLines; i++)
-            {
-                float nextPosition = this.currentOffset.y + i * spaceBetweenLines;
-                painter.MoveTo(new Vector2(0, nextPosition));
-                painter.LineTo(new Vector2(width, nextPosition));
-            }
-
-            painter.Stroke();
+            this.DrawLines(painter, this.majorLineColor, majorLineThickness, lineSpacing * minorLinesPerMajorLine);
         }
 
         private void DrawMinorLines(Painter2D painter)
         {
-            float width = this.layout.width;
-            float height = this.layout.height;
-            float offsetWidth = this.layout.width - this.currentOffset.x;
-            float offsetHeight = this.layout.height - this.currentOffset.y;
+            this.DrawLines(painter, this.minorLineColor, minorLineThickness, lineSpacing);
+        }
 
-            // Minor lines - Vertical
+        private void DrawLines(Painter2D painter, Color lineColor, float lineThickness, float unitsBetweenLines)
+        {
+            float pixelsBetweenLines = unitsBetweenLines * this.zoomLevel;
+            Vector2 viewportSize = this.layout.size;
+            Vector2 drawOffset = new Vector2(
+                (unitsBetweenLines - this.viewportPosition.x % unitsBetweenLines) % unitsBetweenLines,
+                (unitsBetweenLines - this.viewportPosition.y % unitsBetweenLines) % unitsBetweenLines
+                ) * this.zoomLevel;
+
             painter.BeginPath();
-            painter.strokeColor = this.minorLineColor;
-            painter.lineWidth = minorLineThickness;
-            float spaceBetweenLines = lineSpacing * this.zoomLevel;
-            for(int i = 0; i < offsetWidth / spaceBetweenLines; i++)
+            painter.strokeColor = lineColor;
+            painter.lineWidth = lineThickness;
+            for(int i = 0; i < viewportSize.x / pixelsBetweenLines; i++)
             {
-                if(i % minorLinesPerMajorLine == 0)
-                {
-                    continue;
-                }
-
-                float nextPosition = this.currentOffset.x + i * spaceBetweenLines;
+                float nextPosition = drawOffset.x + i * pixelsBetweenLines;
                 painter.MoveTo(new Vector2(nextPosition, 0));
-                painter.LineTo(new Vector2(nextPosition, height));
+                painter.LineTo(new Vector2(nextPosition, viewportSize.y));
             }
 
-            // Minor lines - Horizontal
-            for(int i = 0; i < offsetHeight / spaceBetweenLines; i++)
+            // Major lines - Horizontal
+            for(int i = 0; i < viewportSize.y / pixelsBetweenLines; i++)
             {
-                if(i % minorLinesPerMajorLine == 0)
-                {
-                    continue;
-                }
-
-                float nextPosition = this.currentOffset.y + i * spaceBetweenLines;
+                float nextPosition = drawOffset.y + i * pixelsBetweenLines;
                 painter.MoveTo(new Vector2(0, nextPosition));
-                painter.LineTo(new Vector2(width, nextPosition));
+                painter.LineTo(new Vector2(viewportSize.x, nextPosition));
             }
 
             painter.Stroke();
