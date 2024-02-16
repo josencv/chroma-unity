@@ -89,11 +89,6 @@ namespace Chroma.Editor.Infrastructure.StateMachine
 
         private void OnPointerDown(PointerDownEvent evt)
         {
-            Debug.Log($"pressedButtons: {evt.pressedButtons}");
-            Debug.Log($"panMouseButton: {panMouseButton}");
-            Debug.Log($"isMouseButtonPressed: {this.isMouseButtonPressed(evt.pressedButtons, panMouseButton)}");
-            Debug.Log($"evt.altKey: {evt.altKey}");
-
             if(this.isMouseButtonPressed(evt.pressedButtons, panMouseButton) && evt.altKey)
             {
                 this.panning = true;
