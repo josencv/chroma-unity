@@ -1,9 +1,18 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace Chroma.Editor.Infrastructure.StateMachine
 {
+    [Flags]
+    enum MouseButton
+    {
+        Left = 0,
+        Right = 1,
+        Middle = 2
+    }
+
     public class Grid : VisualElement
     {
         // For simplicity, the unit is equal to 1 pixel with a zoom level of 1
@@ -14,6 +23,7 @@ namespace Chroma.Editor.Infrastructure.StateMachine
         private const int minorLinesPerMajorLine = 10;
         private const float majorLineThickness = 1.2f;
         private const float minorLineThickness = 0.8f;
+        private const MouseButton panMouseButton = MouseButton.Left;
         private readonly Color backgroundColor = new Color(38f / 255, 38f / 255, 38f / 255);
         private readonly Color minorLineColor = new Color(33f / 255, 33f / 255, 33f / 255);
         private readonly Color majorLineColor = new Color(30f / 255, 30f / 255, 30f / 255);
@@ -26,12 +36,16 @@ namespace Chroma.Editor.Infrastructure.StateMachine
         /// </summary>
         private Vector2 viewportPosition = Vector2.zero;
         private float zoomLevel = 1.4f;
+        private bool panning = false;
 
         public Grid()
         {
             this.DefineDefaultStyles();
             this.generateVisualContent += this.DrawLines;
-            this.RegisterCallback<WheelEvent>(this.OnZoom);
+            this.RegisterCallback<WheelEvent>(this.OnWheelEvent);
+            this.RegisterCallback<PointerDownEvent>(this.OnPointerDown);
+            this.RegisterCallback<PointerMoveEvent>(this.OnPointerMove);
+            this.RegisterCallback<PointerUpEvent>(this.OnPointerUp);
 
             this.AddStateBox();
             this.PositionStates();
@@ -67,24 +81,74 @@ namespace Chroma.Editor.Infrastructure.StateMachine
             }
         }
 
-        private void OnZoom(WheelEvent evt)
+        private void OnWheelEvent(WheelEvent evt)
+        {
+            this.Zoom(evt.localMousePosition, evt.delta.y);
+            evt.StopPropagation();
+        }
+
+        private void OnPointerDown(PointerDownEvent evt)
+        {
+            Debug.Log($"pressedButtons: {evt.pressedButtons}");
+            Debug.Log($"panMouseButton: {panMouseButton}");
+            Debug.Log($"isMouseButtonPressed: {this.isMouseButtonPressed(evt.pressedButtons, panMouseButton)}");
+            Debug.Log($"evt.altKey: {evt.altKey}");
+
+            if(this.isMouseButtonPressed(evt.pressedButtons, panMouseButton) && evt.altKey)
+            {
+                this.panning = true;
+            }
+
+            evt.StopPropagation();
+        }
+
+        private void OnPointerMove(PointerMoveEvent evt)
+        {
+            if(!evt.altKey)
+            {
+                this.panning = false;
+                return;
+                // Apply panning based on evt.position delta
+            }
+
+            if(this.panning)
+            {
+                this.Pan(evt.deltaPosition);
+            }
+
+            evt.StopPropagation();
+        }
+
+        private void OnPointerUp(PointerUpEvent evt)
+        {
+            if(this.isMouseButtonPressed(evt.pressedButtons, panMouseButton))
+            {
+                this.panning = false;
+            }
+        }
+
+        private void Zoom(Vector2 zoomPoint, float zoomDelta)
         {
             // the zoom level delta depends on the zoom level itself to have a more "linear"
             // experience between zooming from zoomed-in levels vs zoomed-out ones
             float lastZoomLevel = this.zoomLevel;
-            this.zoomLevel -= evt.delta.y * zoomSensitivity * this.zoomLevel;
+            this.zoomLevel -= zoomDelta * zoomSensitivity * this.zoomLevel;
             this.zoomLevel = Mathf.Clamp(this.zoomLevel, minZoom, maxZoom);
-            this.UpdateViewportPosition(evt.localMousePosition, lastZoomLevel, this.zoomLevel);
+
+            float scaleFactor = this.zoomLevel / lastZoomLevel;
+            Vector2 zoomPosition = zoomPoint / this.zoomLevel;
+            this.viewportPosition = this.viewportPosition + (zoomPosition * (scaleFactor - 1));
+
             this.PositionStates();
             this.MarkDirtyRepaint();
-            evt.StopPropagation();
         }
 
-        private void UpdateViewportPosition(Vector2 zoomPoint, float lastZoomLevel, float currentZoomLevel)
+        private void Pan(Vector2 deltaPosition)
         {
-            float scaleFactor = currentZoomLevel / lastZoomLevel;
-            Vector2 zoomPosition = zoomPoint / currentZoomLevel;
-            this.viewportPosition = this.viewportPosition + (zoomPosition * (scaleFactor - 1));
+            // the pan is done contrary to the delta of the mouse, to simulate dragging the grid
+            this.viewportPosition = this.viewportPosition - deltaPosition / this.zoomLevel;
+            this.PositionStates();
+            this.MarkDirtyRepaint();
         }
 
         private void DrawLines(MeshGenerationContext ctx)
@@ -132,6 +196,11 @@ namespace Chroma.Editor.Infrastructure.StateMachine
             }
 
             painter.Stroke();
+        }
+
+        private bool isMouseButtonPressed(int pressedButtonsBitmask, MouseButton button)
+        {
+            return (pressedButtonsBitmask & (1 << (int)button)) != 0;
         }
     }
 }
