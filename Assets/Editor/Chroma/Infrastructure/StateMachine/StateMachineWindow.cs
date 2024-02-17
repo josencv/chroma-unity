@@ -14,6 +14,11 @@ namespace Chroma.Editor.Infrastructure.StateMachine
 
         private IEnumerable<System.Type> stateTypes;
 
+        private void OnEnable()
+        {
+            this.LoadStatesTypes();
+        }
+
         [MenuItem("Window/Chroma/State Machine")]
         public static void ShowWindow()
         {

@@ -13,6 +13,10 @@ namespace Chroma.Editor.Infrastructure.StateMachine
         {
             this.Position = position;
             this.Size = size;
+
+            // Hack to prevent the grid from receiving click events when clicking on positioned
+            // elements. There is probably a clean way to do it, but I haven't found it yet.
+            this.AddManipulator(new ContextualMenuManipulator(this.BuildContextMenu));
         }
 
         protected virtual void SetDefaultStyles()
@@ -31,6 +35,12 @@ namespace Chroma.Editor.Infrastructure.StateMachine
         public void Hide()
         {
             this.visible = false;
+        }
+
+
+        protected void BuildContextMenu(ContextualMenuPopulateEvent evt)
+        {
+            return;
         }
     }
 }

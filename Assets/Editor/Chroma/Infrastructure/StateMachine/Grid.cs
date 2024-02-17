@@ -42,21 +42,31 @@ namespace Chroma.Editor.Infrastructure.StateMachine
         public Grid()
         {
             this.DefineDefaultStyles();
+            this.AddManipulator(new ContextualMenuManipulator(this.BuildContextMenu));
             this.generateVisualContent += this.DrawLines;
             this.RegisterCallback<WheelEvent>(this.OnWheelEvent);
             this.RegisterCallback<PointerDownEvent>(this.OnPointerDown);
             this.RegisterCallback<PointerMoveEvent>(this.OnPointerMove);
             this.RegisterCallback<PointerUpEvent>(this.OnPointerUp);
 
-            this.AddStateBox();
-            this.PositionStates();
+            this.AddDefaultBoxes();
+            this.PositionElements();
         }
 
-        private void AddStateBox()
+        private void AddDefaultBoxes()
         {
             var stateBox = new StateBox("Test State", new Vector2(100, 150));
             this.positionedElements.Add(stateBox);
             this.Add(stateBox);
+        }
+
+        private void AddStateBox(Vector2 logicalPosition)
+        {
+            var stateBox = new StateBox("New State", logicalPosition);
+            this.positionedElements.Add(stateBox);
+            this.Add(stateBox);
+            this.PositionElement(stateBox);
+            this.MarkDirtyRepaint();
         }
 
         private void DefineDefaultStyles()
@@ -107,17 +117,33 @@ namespace Chroma.Editor.Infrastructure.StateMachine
             }
         }
 
-        private void PositionStates()
+        private void PositionElements()
         {
             foreach(PositionedVisualElement element in this.positionedElements)
             {
-                // Since the scaling involves repositioning relative to the viewport, I chose not to move the logic inside the elements
-                float width = element.style.width.value.value;
-                float height = element.style.height.value.value;
-                element.style.scale = new StyleScale(new Vector2(this.zoomLevel, this.zoomLevel));
-                element.style.left = (element.Position.x - this.viewportPosition.x) * this.zoomLevel + width / 2 * (this.zoomLevel - 1);
-                element.style.top = (element.Position.y - this.viewportPosition.y) * this.zoomLevel + height / 2 * (this.zoomLevel - 1);
+                this.PositionElement(element);
             }
+        }
+
+        private void PositionElement(PositionedVisualElement element)
+        {
+            // Since the scaling involves repositioning relative to the viewport, I chose not to move the logic inside the elements
+            float width = element.style.width.value.value;
+            float height = element.style.height.value.value;
+            element.style.scale = new StyleScale(new Vector2(this.zoomLevel, this.zoomLevel));
+            element.style.left = (element.Position.x - this.viewportPosition.x) * this.zoomLevel + width / 2 * (this.zoomLevel - 1);
+            element.style.top = (element.Position.y - this.viewportPosition.y) * this.zoomLevel + height / 2 * (this.zoomLevel - 1);
+        }
+
+        void BuildContextMenu(ContextualMenuPopulateEvent evt)
+        {
+            if(evt.target == this)
+            {
+                Vector2 logicalPosition = this.viewportPosition + evt.localMousePosition / this.zoomLevel;
+                evt.menu.AppendAction("New State", action => this.AddStateBox(logicalPosition), DropdownMenuAction.AlwaysEnabled);
+            }
+
+            evt.StopPropagation();
         }
 
         private void Zoom(Vector2 zoomPoint, float zoomDelta)
@@ -132,7 +158,7 @@ namespace Chroma.Editor.Infrastructure.StateMachine
             Vector2 zoomPosition = zoomPoint / this.zoomLevel;
             this.viewportPosition = this.viewportPosition + (zoomPosition * (scaleFactor - 1));
 
-            this.PositionStates();
+            this.PositionElements();
             this.MarkDirtyRepaint();
         }
 
@@ -140,7 +166,7 @@ namespace Chroma.Editor.Infrastructure.StateMachine
         {
             // the pan is done contrary to the delta of the mouse, to simulate dragging the grid
             this.viewportPosition = this.viewportPosition - deltaPosition / this.zoomLevel;
-            this.PositionStates();
+            this.PositionElements();
             this.MarkDirtyRepaint();
         }
 
