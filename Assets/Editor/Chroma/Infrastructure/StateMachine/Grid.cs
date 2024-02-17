@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -65,22 +66,6 @@ namespace Chroma.Editor.Infrastructure.StateMachine
             this.style.backgroundColor = new StyleColor(this.backgroundColor);
         }
 
-        private void PositionStates()
-        {
-            foreach(PositionedVisualElement element in this.positionedElements)
-            {
-                // using the style values instead of `element.layout.size` because the rendered size
-                // may not have been resolved yet
-                // Also, this assumes the elements have a set width and height in pixel values
-                float width = element.style.width.value.value;
-                float height = element.style.height.value.value;
-
-                element.style.scale = new StyleScale(new Vector2(this.zoomLevel, this.zoomLevel));
-                element.style.left = (element.Position.x - this.viewportPosition.x) * this.zoomLevel + width / 2 * (this.zoomLevel - 1);
-                element.style.top = (element.Position.y - this.viewportPosition.y) * this.zoomLevel + height / 2 * (this.zoomLevel - 1);
-            }
-        }
-
         private void OnWheelEvent(WheelEvent evt)
         {
             this.Zoom(evt.localMousePosition, evt.delta.y);
@@ -119,6 +104,19 @@ namespace Chroma.Editor.Infrastructure.StateMachine
             if(this.isMouseButtonPressed(evt.pressedButtons, panMouseButton))
             {
                 this.panning = false;
+            }
+        }
+
+        private void PositionStates()
+        {
+            foreach(PositionedVisualElement element in this.positionedElements)
+            {
+                // Since the scaling involves repositioning relative to the viewport, I chose not to move the logic inside the elements
+                float width = element.style.width.value.value;
+                float height = element.style.height.value.value;
+                element.style.scale = new StyleScale(new Vector2(this.zoomLevel, this.zoomLevel));
+                element.style.left = (element.Position.x - this.viewportPosition.x) * this.zoomLevel + width / 2 * (this.zoomLevel - 1);
+                element.style.top = (element.Position.y - this.viewportPosition.y) * this.zoomLevel + height / 2 * (this.zoomLevel - 1);
             }
         }
 

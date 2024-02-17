@@ -21,11 +21,6 @@ namespace Chroma.Editor.Infrastructure.StateMachine
             wnd.titleContent = new GUIContent("State Machine");
         }
 
-        private void OnEnable()
-        {
-            // Load state types and do stuff
-        }
-
         public void CreateGUI()
         {
             // Each editor window contains a root VisualElement object
