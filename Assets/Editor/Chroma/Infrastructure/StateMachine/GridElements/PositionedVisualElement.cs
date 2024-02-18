@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using USSPosition = UnityEngine.UIElements.Position;
 
-namespace Chroma.Editor.Infrastructure.StateMachine
+namespace Chroma.Editor.Infrastructure.StateMachine.GridElements
 {
     public abstract class PositionedVisualElement : VisualElement
     {
@@ -37,10 +37,6 @@ namespace Chroma.Editor.Infrastructure.StateMachine
             this.visible = false;
         }
 
-
-        protected void BuildContextMenu(ContextualMenuPopulateEvent evt)
-        {
-            return;
-        }
+        protected virtual void BuildContextMenu(ContextualMenuPopulateEvent evt) { }
     }
 }

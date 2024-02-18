@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Unity.Mathematics;
+using Chroma.Editor.Infrastructure.StateMachine.GridElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -55,15 +55,64 @@ namespace Chroma.Editor.Infrastructure.StateMachine
 
         private void AddDefaultBoxes()
         {
-            var stateBox = new StateBox("Test State", new Vector2(100, 150));
-            this.positionedElements.Add(stateBox);
-            this.Add(stateBox);
+            var state = new StateBox("Green", new Vector2(10, 10), BoxColorData.Schemes[BoxColor.Green]);
+            this.positionedElements.Add(state);
+            this.Add(state);
+
+            state = new StateBox("Teal", new Vector2(210, 10), BoxColorData.Schemes[BoxColor.Teal]);
+            this.positionedElements.Add(state);
+            this.Add(state);
+
+            state = new StateBox("Cyan", new Vector2(410, 10), BoxColorData.Schemes[BoxColor.Cyan]);
+            this.positionedElements.Add(state);
+            this.Add(state);
+
+            state = new StateBox("Blue", new Vector2(10, 90), BoxColorData.Schemes[BoxColor.Blue]);
+            this.positionedElements.Add(state);
+            this.Add(state);
+
+            state = new StateBox("Purple", new Vector2(210, 90), BoxColorData.Schemes[BoxColor.Purple]);
+            this.positionedElements.Add(state);
+            this.Add(state);
+
+            state = new StateBox("Burgundy", new Vector2(410, 90), BoxColorData.Schemes[BoxColor.Burgundy]);
+            this.positionedElements.Add(state);
+            this.Add(state);
+
+            state = new StateBox("Pink", new Vector2(10, 170), BoxColorData.Schemes[BoxColor.Pink]);
+            this.positionedElements.Add(state);
+            this.Add(state);
+
+            state = new StateBox("Red", new Vector2(210, 170), BoxColorData.Schemes[BoxColor.Red]);
+            this.positionedElements.Add(state);
+            this.Add(state);
+
+            state = new StateBox("Orange", new Vector2(410, 170), BoxColorData.Schemes[BoxColor.Orange]);
+            this.positionedElements.Add(state);
+            this.Add(state);
+
+            state = new StateBox("Yellow", new Vector2(10, 250), BoxColorData.Schemes[BoxColor.Yellow]);
+            this.positionedElements.Add(state);
+            this.Add(state);
+
+            state = new StateBox("Black", new Vector2(210, 250), BoxColorData.Schemes[BoxColor.Black]);
+            this.positionedElements.Add(state);
+            this.Add(state);
+
+            state = new StateBox("Gray", new Vector2(410, 250), BoxColorData.Schemes[BoxColor.Gray]);
+            this.positionedElements.Add(state);
+            this.Add(state);
+
+            state = new StateBox("Brown", new Vector2(10, 330), BoxColorData.Schemes[BoxColor.Brown]);
+            this.positionedElements.Add(state);
+            this.Add(state);
         }
 
         private void AddStateBox(Vector2 logicalPosition)
         {
-            var stateBox = new StateBox("New State", logicalPosition);
+            var stateBox = new StateBox("New State", logicalPosition, BoxColorData.Schemes[BoxColor.Purple]);
             this.positionedElements.Add(stateBox);
+            stateBox.DeleteRequested += element => this.Remove(element);
             this.Add(stateBox);
             this.PositionElement(stateBox);
             this.MarkDirtyRepaint();
