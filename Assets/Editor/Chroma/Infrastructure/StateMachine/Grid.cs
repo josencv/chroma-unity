@@ -25,6 +25,7 @@ namespace Chroma.Editor.Infrastructure.StateMachine
         private const float majorLineThickness = 1.2f;
         private const float minorLineThickness = 0.8f;
         private const MouseButton panMouseButton = MouseButton.Left;
+        private const MouseButton moveElementButton = MouseButton.Left;
         private readonly Color backgroundColor = new Color(38f / 255, 38f / 255, 38f / 255);
         private readonly Color minorLineColor = new Color(33f / 255, 33f / 255, 33f / 255);
         private readonly Color majorLineColor = new Color(30f / 255, 30f / 255, 30f / 255);
@@ -38,6 +39,9 @@ namespace Chroma.Editor.Infrastructure.StateMachine
         private Vector2 viewportPosition = Vector2.zero;
         private float zoomLevel = 1.4f;
         private bool panning = false;
+        private Vector2 elementDragStartPosition = Vector2.zero;
+        private Vector2 pointerDragStartPosition = Vector2.zero;
+        private PositionedVisualElement elementBeingMoved;
 
         public Grid()
         {
@@ -112,7 +116,8 @@ namespace Chroma.Editor.Infrastructure.StateMachine
         {
             var stateBox = new StateBox("New State", logicalPosition, BoxColorData.Schemes[BoxColor.Purple]);
             this.positionedElements.Add(stateBox);
-            stateBox.DeleteRequested += element => this.Remove(element);
+            stateBox.DeleteRequested += this.Remove;
+            // stateBox.PointerDown += this.TrackElementDrag;
             this.Add(stateBox);
             this.PositionElement(stateBox);
             this.MarkDirtyRepaint();
@@ -133,12 +138,15 @@ namespace Chroma.Editor.Infrastructure.StateMachine
 
         private void OnPointerDown(PointerDownEvent evt)
         {
-            if(this.isMouseButtonPressed(evt.pressedButtons, panMouseButton) && evt.altKey)
+            if(this.isMouseButton(evt.pressedButtons, panMouseButton) && evt.altKey)
             {
                 this.panning = true;
             }
 
-            evt.StopPropagation();
+            if(evt.target is PositionedVisualElement)
+            {
+                this.StartTrackingElementDrag(evt, evt.target as PositionedVisualElement);
+            }
         }
 
         private void OnPointerMove(PointerMoveEvent evt)
@@ -146,8 +154,6 @@ namespace Chroma.Editor.Infrastructure.StateMachine
             if(!evt.altKey)
             {
                 this.panning = false;
-                return;
-                // Apply panning based on evt.position delta
             }
 
             if(this.panning)
@@ -155,15 +161,20 @@ namespace Chroma.Editor.Infrastructure.StateMachine
                 this.Pan(evt.deltaPosition);
             }
 
-            evt.StopPropagation();
+            if(this.elementBeingMoved != null)
+            {
+                this.MoveElement(evt.localPosition);
+            }
         }
 
         private void OnPointerUp(PointerUpEvent evt)
         {
-            if(this.isMouseButtonPressed(evt.pressedButtons, panMouseButton))
+            if(this.isMouseButton(evt.pressedButtons, panMouseButton))
             {
                 this.panning = false;
             }
+
+            this.elementBeingMoved = null;
         }
 
         private void PositionElements()
@@ -182,6 +193,13 @@ namespace Chroma.Editor.Infrastructure.StateMachine
             element.style.scale = new StyleScale(new Vector2(this.zoomLevel, this.zoomLevel));
             element.style.left = (element.Position.x - this.viewportPosition.x) * this.zoomLevel + width / 2 * (this.zoomLevel - 1);
             element.style.top = (element.Position.y - this.viewportPosition.y) * this.zoomLevel + height / 2 * (this.zoomLevel - 1);
+        }
+
+        private void StartTrackingElementDrag(PointerDownEvent evt, PositionedVisualElement element)
+        {
+            this.pointerDragStartPosition = this.viewportPosition + (Vector2)evt.localPosition / this.zoomLevel;
+            this.elementDragStartPosition = element.Position;
+            this.elementBeingMoved = element;
         }
 
         void BuildContextMenu(ContextualMenuPopulateEvent evt)
@@ -216,6 +234,17 @@ namespace Chroma.Editor.Infrastructure.StateMachine
             // the pan is done contrary to the delta of the mouse, to simulate dragging the grid
             this.viewportPosition = this.viewportPosition - deltaPosition / this.zoomLevel;
             this.PositionElements();
+            this.MarkDirtyRepaint();
+        }
+
+        private void MoveElement(Vector2 localPointerPosition)
+        {
+            Vector2 pointerPosition = this.viewportPosition + localPointerPosition / this.zoomLevel;
+            Vector2 dragDistance = pointerPosition - this.pointerDragStartPosition;
+            Vector2 elementVirtualPosition = this.elementDragStartPosition + dragDistance;
+            Vector2 closestSnapPosition = this.SnapToGrid(elementVirtualPosition, new Vector2(lineSpacing, lineSpacing));
+            this.elementBeingMoved.Position = closestSnapPosition;
+            this.PositionElement(this.elementBeingMoved);
             this.MarkDirtyRepaint();
         }
 
@@ -266,9 +295,17 @@ namespace Chroma.Editor.Infrastructure.StateMachine
             painter.Stroke();
         }
 
-        private bool isMouseButtonPressed(int pressedButtonsBitmask, MouseButton button)
+        private bool isMouseButton(int pressedButtonsBitmask, MouseButton button)
         {
             return (pressedButtonsBitmask & (1 << (int)button)) != 0;
+        }
+
+        private Vector2 SnapToGrid(Vector2 originalPosition, Vector2 gridSize)
+        {
+            float x = Mathf.Round(originalPosition.x / gridSize.x) * gridSize.x;
+            float y = Mathf.Round(originalPosition.y / gridSize.y) * gridSize.y;
+
+            return new Vector2(x, y);
         }
     }
 }

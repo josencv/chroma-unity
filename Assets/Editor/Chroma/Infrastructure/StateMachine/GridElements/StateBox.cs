@@ -9,10 +9,11 @@ namespace Chroma.Editor.Infrastructure.StateMachine.GridElements
     {
         private const int boxBorderRadius = 3;
 
-        public event Action<VisualElement> DeleteRequested;
+        public event Action<PositionedVisualElement> DeleteRequested;
+        public event Action<PointerDownEvent, PositionedVisualElement> PointerDown;
 
         private float borderWidth = 2.0f;
-        private Color selectionBorderColor = ColorUtils.FromRGB(54, 173, 220);
+        private Color selectionBorderColor = ColorUtil.FromRGB(54, 173, 220);
         private float selectionBorderWidth = 2.0f;
         private BoxColorScheme colorScheme;
 

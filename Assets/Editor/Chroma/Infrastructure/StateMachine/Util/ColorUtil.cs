@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Chroma.Editor.Infrastructure.StateMachine.Util
 {
-    public static class ColorUtils
+    public static class ColorUtil
     {
         public static Color FromRGB(int r, int g, int b)
         {
