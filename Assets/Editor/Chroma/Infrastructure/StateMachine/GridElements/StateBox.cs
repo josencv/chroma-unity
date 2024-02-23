@@ -10,7 +10,6 @@ namespace Chroma.Editor.Infrastructure.StateMachine.GridElements
         private const int boxBorderRadius = 3;
 
         public event Action<PositionedVisualElement> DeleteRequested;
-        public event Action<PointerDownEvent, PositionedVisualElement> PointerDown;
 
         private float borderWidth = 2.0f;
         private Color selectionBorderColor = ColorUtil.FromRGB(54, 173, 220);
@@ -19,25 +18,13 @@ namespace Chroma.Editor.Infrastructure.StateMachine.GridElements
 
         public StateBox(string stateName, Vector2 position, BoxColorScheme colorScheme) : base(position, new Vector2(150, 30))
         {
-            this.Position = position;
             this.colorScheme = colorScheme;
-            this.focusable = true;
             this.SetDefaultStyles();
             this.AddLabel(stateName);
-            this.RegisterCallback<FocusEvent>(this.OnFocus);
-            this.RegisterCallback<BlurEvent>(this.OnBlur);
         }
 
-        private void AddLabel(string stateName)
+        private void SetDefaultStyles()
         {
-            var label = new Label(stateName);
-            label.style.unityTextAlign = TextAnchor.MiddleCenter; // Ensure text is centered
-            this.Add(label); // Add the label to the box
-        }
-
-        protected override void SetDefaultStyles()
-        {
-            base.SetDefaultStyles();
             this.style.backgroundColor = this.colorScheme.BackgroundColor;
             this.style.justifyContent = Justify.Center;
             this.style.alignItems = Align.Center;
@@ -48,46 +35,31 @@ namespace Chroma.Editor.Infrastructure.StateMachine.GridElements
             this.SetBorder(this.colorScheme.BorderColor, this.borderWidth);
         }
 
+        public override void Select()
+        {
+            base.Select();
+            this.SetBorder(this.selectionBorderColor, this.selectionBorderWidth);
+        }
+
+        public override void Deselect()
+        {
+            base.Deselect();
+            this.SetBorder(this.colorScheme.BorderColor, this.borderWidth);
+        }
+
         protected override void BuildContextMenu(ContextualMenuPopulateEvent evt)
         {
             if(evt.target == this)
             {
                 evt.menu.AppendAction("Delete", action => this.DeleteRequested?.Invoke(this), DropdownMenuAction.AlwaysEnabled);
             }
-
-            evt.StopPropagation();
         }
 
-        private void OnFocus(FocusEvent evt)
+        private void AddLabel(string stateName)
         {
-            this.SetBorder(this.selectionBorderColor, this.selectionBorderWidth);
-        }
-
-        private void OnBlur(BlurEvent evt)
-        {
-            this.SetBorder(this.colorScheme.BorderColor, this.borderWidth);
-        }
-
-        private void SetBorder(Color color, float width)
-        {
-            this.SetBorderColor(color);
-            this.SetBorderWidth(width);
-        }
-
-        private void SetBorderColor(Color color)
-        {
-            this.style.borderTopColor = color;
-            this.style.borderLeftColor = color;
-            this.style.borderBottomColor = color;
-            this.style.borderRightColor = color;
-        }
-
-        private void SetBorderWidth(float width)
-        {
-            this.style.borderTopWidth = width;
-            this.style.borderLeftWidth = width;
-            this.style.borderBottomWidth = width;
-            this.style.borderRightWidth = width;
+            var label = new Label(stateName);
+            label.style.unityTextAlign = TextAnchor.MiddleCenter; // Ensure text is centered
+            this.Add(label); // Add the label to the box
         }
     }
 }
